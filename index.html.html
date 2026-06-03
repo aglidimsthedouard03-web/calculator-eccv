@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculatrice Scientifique ECCV</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#dfeaf3;
+    display:flex;
+    justify-content:center;
+    align-items:flex-start;
+   
+	min-height:100vh;
+	padding:20px;
+	overflow-y:auto;
+}
+
+.calculator{
+    background:white;
+    padding:20px;
+    border-radius:20px;
+    width:100%;
+	max-width:360px;
+	
+    box-shadow:0px 0px 15px rgba(0,0,0,0.2);
+	
+	margin-top:20px;
+	margin-bottom:20px;
+}
+
+.top-buttons{
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+}
+
+.top-buttons button{
+    width:70px;
+    height:45px;
+    border:none;
+    border-radius:10px;
+    background:#d8dde5;
+    font-size:18px;
+    cursor:pointer;
+}
+
+.display{
+    width:100%;
+    height:80px;
+    border:none;
+    background:#f3f5f9;
+    text-align:right;
+    font-size:30px;
+    padding-right:10px;
+    margin-bottom:15px;
+    border-radius:10px;
+}
+
+
+.buttons{
+    display:grid;
+    grid-template-columns:repeat(5,1fr);
+    gap:10px;
+}
+
+button{
+    height:55px;
+    border:none;
+    border-radius:12px;
+    font-size:18px;
+    cursor:pointer;
+    background:#edf1f7;
+}
+
+.operator{
+    background:#f1c26b;
+    color:white;
+}
+
+.equal{
+    background:#59c99b;
+    color:white;
+    grid-column:span 2;
+}
+
+.dark{
+background:#121212;
+color:white;
+}
+
+.dark .calculator{
+background:#1e1e1e;
+}
+
+.dark .display{
+background:#2b2b2b;
+color:white;
+}
+
+.dark button{
+background:#333;
+color:white;
+}
+
+.clear{
+    background:#df5d5d;
+    color:white;
+}
+
+.history-container{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.history-header{
+
+    padding: 12px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.history-content{
+
+    display: none;
+
+    max-height: 200px;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    margin-top: 5px;
+}
+
+.history-content.active{
+    display: block;
+}
+
+.history-item{
+
+    padding: 8px;
+
+    margin-bottom: 5px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+.mode{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+/* Panneau avancé */
+
+#advancedPanel{
+    display:none;
+    margin-top:15px;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+}
+
+#advancedPanel.show{
+    display:grid;
+}
+
+#toggleAdvanced{
+    background:#7a7df0;
+    color:white;
+}
+
+/* Responsive Mobile */
+
+@media(max-width:480px){
+      
+	  .calculator{
+	      width:95%
+	      max-width:100%;
+		  padding:15px;
+		  border-radius:15px;
+	}
+	.buttons{
+	     gap:6px;
+	}
+	
+	button{
+	     height:48px;
+		 font-size:15px;
+	}
+	
+	.display{
+	     height:65px;
+		 font-size:22px;
+	}
+	
+	.top-buttons button{
+	     width:60px;
+		 height:40px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<div class="top-buttons">
+<button>DEG</button>
+<button>RAD</button>
+<button onclick="toggleDark()">🌙</button>
+<button id="toggleAdvanced">SCI</button>
+
+</div>
+
+<div id="history"></div>
+
+<input type="text" id="display" class="display" readonly>
+
+<div class="history-container">
+
+    <div class="history-header" onclick="toggleHistory()">
+        <span>📜 History</span>
+        <span id="arrow">▼</span>
+    </div>
+
+    <div class="history-content" id="historyContent"></div>
+
+</div>
+
+<div class="buttons">
+	
+<button class="clear" onclick="clearDisplay()">C</button>
+<button onclick="backspace()">⌫</button>
+<button onclick="appendValue('(')">(</button>
+<button onclick="appendValue(')')">)</button>
+<button onclick="appendValue('%')">%</button>
+
+<button onclick="appendValue('7')">7</button>
+<button onclick="appendValue('8')">8</button>
+<button onclick="appendValue('9')">9</button>
+<button class="operator" onclick="appendValue('/')">÷</button>
+<button onclick="appendValue('Math.sqrt(')">√</button>
+
+<button onclick="appendValue('4')">4</button>
+<button onclick="appendValue('5')">5</button>
+<button onclick="appendValue('6')">6</button>
+<button class="operator" onclick="appendValue('*')">×</button>
+<button onclick="appendValue('**2')">x²</button>
+
+<button onclick="appendValue('1')">1</button>
+<button onclick="appendValue('2')">2</button>
+<button onclick="appendValue('3')">3</button>
+<button class="operator" onclick="appendValue('-')">−</button>
+<button onclick="appendValue('**3')">x³</button>
+
+<button onclick="appendValue('0')">0</button>
+<button onclick="appendValue('.')">.</button>
+<button onclick="appendValue('Math.PI')">π</button>
+<button class="operator" onclick="appendValue('+')">+</button>
+<button onclick="appendValue('Math.E')">e</button>
+
+<button class="equal" onclick="calculate()">=</button>
+
+<button onclick="clearHistory()">🗑️</button>
+</div>
+
+<!-- Fonctions avancées -->
+
+<div id="advancedPanel">
+
+<button onclick="appendValue('Math.sin(')">sin</button>
+<button onclick="appendValue('Math.cos(')">cos</button>
+<button onclick="appendValue('Math.tan(')">tan</button>
+<button onclick="appendValue('Math.log10(')">log</button>
+
+<button onclick="appendValue('Math.log(')">ln</button>
+<button onclick="appendValue('Math.asin(')">asin</button>
+<button onclick="appendValue('Math.acos(')">acos</button>
+<button onclick="appendValue('Math.atan(')">atan</button>
+
+<button onclick="appendValue('Math.sinh(')">sinh</button>
+<button onclick="appendValue('Math.cosh(')">cosh</button>
+<button onclick="appendValue('Math.tanh(')">tanh</button>
+<button onclick="appendValue('Math.exp(')">exp</button>
+
+<button onclick="appendValue('Math.abs(')">abs</button>
+<button onclick="appendValue('Math.floor(')">floor</button>
+<button onclick="appendValue('Math.ceil(')">ceil</button>
+<button onclick="appendValue('Math.random()')">rand</button>
+
+<button onclick="appendValue('!')">n!</button>
+<button onclick="appendValue('1/')">1/x</button>
+<button onclick="appendValue('**')">xʸ</button>
+<button onclick="appendValue('Math.cbrt(')">³√</button>
+
+</div>
+
+</div>
+
+<script>
+
+const display = document.getElementById("display");
+
+function appendValue(value){
+
+    const operators = ["+","-","*","/","%"];
+	
+	let lastChar = 
+	display.value.slice(-1);
+	
+	if(
+	    operators.includes(lastChar) &&
+		operators.includes(value)
+	){
+	    return;
+	}
+	
+    display.value += value;
+}
+
+function clearDisplay(){
+    display.value = "";
+}
+
+function toggleDark(){
+document.body.classList.toggle("dark");
+}
+
+function backspace(){
+    display.value = display.value.slice(0,-1);
+}
+
+function calculate(){
+
+    try{
+
+        let expression = display.value;
+
+        expression = expression.replace(/(\d+)!/g, function(match, number){
+		
+            let fact = 1;
+
+            for(let i=1; i <= number; i++){
+                fact *= i;
+            }
+
+            return fact;
+        });
+		
+		let openCount = (expression.match(/\(/g) ||
+		[]).length;
+		let closeCount = (expression.match(/\)/g) ||
+		[]).length;
+		
+		while(closeCount < openCount){
+		    expression += ")";
+			closeCount++;
+	    }
+		
+		console.log(expression);
+		
+		let result = eval(expression);
+
+        addToHistory(expression + " = " + result);
+		
+		display.value = result;
+
+    }catch(error){
+
+        display.value = "Expression invalide";
+
+    }
+	
+}
+
+/* Bouton panneau avancé */
+
+const toggleBtn = document.getElementById("toggleAdvanced");
+const advancedPanel = document.getElementById("advancedPanel");
+
+toggleBtn.addEventListener("click", () => {
+
+    advancedPanel.classList.toggle("show");
+
+    if(advancedPanel.classList.contains("show")){
+        toggleBtn.innerHTML = "⬅️";
+    }else{
+        toggleBtn.innerHTML = "SCI";
+    }
+
+});
+
+
+
+function toggleHistory(){
+
+    const history = 
+	document.getElementById("historyContent");
+	
+    const arrow = 
+	document.getElementById("arrow");
+
+    history.classList.toggle("active");
+
+    if(history.classList.contains("active")){
+        arrow.innerHTML = "▲";
+    }else{
+        arrow.innerHTML = "▼";
+    }
+}
+
+
+function addToHistory(text){
+
+    const history = document.getElementById("historyContent");
+
+    history.innerHTML += `
+        <div class="history-item">${text}</div>
+    `;
+}
+
+function clearHistory(){
+
+     document.getElementById(
+	     "historyContent"
+	).innerHTML = "";
+	
+}
+
+</script>
+
+</body>
+</html>
