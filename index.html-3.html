@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>Calculatrice Scientifique ECCV</title>
+
+<style>
+
+body{
+   
+    margin:0;
+	padding:0;
+	height:100vh;
+	width:100vw;
+	overflow-y:auto;
+	overflow-x:hidden;
+	background:#dfeaf3;
+	font-family: Arial,sans-serif;
+}
+
+.calculator{
+    width:100%;
+	height:100vh;
+	width:100%;
+	height:100vh;
+	max-width:none;
+	min-width:none;
+	
+	margin:0;
+    padding:8px;
+	
+    border-radius:0;
+	
+    box-sizing:border-box;
+	
+	display:flex;
+	flex-direction:column;
+	
+	background:white;
+	overflow-y:auto;
+}
+
+.top-buttons{
+    height:60px;
+    display:flex;
+    justify-content:space-between;
+    margin-bottom:15px;
+	font-size:18px;
+}
+
+.scientific buttons button{
+     height:58px;
+	 font-size:18px;
+} 
+	 
+.scientific-buttons{
+     display:none;
+} 
+
+.top-buttons button{
+    flex:1;
+    height:50px;
+	width:70px;
+    border:none;
+    border-radius:10px;
+    background:#d8dde5;
+    font-size:18px;
+    cursor:pointer;
+	margin:0 4px;
+}
+
+.display{
+    width:100%;
+	min-height:120px;
+    height:90px;
+    border:none;
+    background:#f3f5f9;
+    text-align:right;
+    font-size:32px;
+	padding:8px;
+    margin-bottom:15px;
+    border-radius:12px;
+	box-sizing:border-box;
+}
+
+
+.buttons{
+    flex:1;
+	
+    display:grid;
+	
+    grid-template-columns:repeat(5,1fr);
+	
+    gap:8px;
+
+}
+
+button{
+	width:100%;
+	height:72px;
+	
+	min-height:70;
+	
+    border:none;
+	border-radius:16px;
+	
+    font-size:28px;
+}
+
+
+.btn-ai{
+     background:#6c63ff;
+	 color:white;
+	 font-size:18px;
+	 font-weight:bold;
+}
+
+.btn-goal{
+     background:#00b894;
+	 color:white;
+	 font-size:18px;
+	 font-weight:bold;
+}
+
+.operator{
+    background:#f1c26b;
+    color:white;
+}
+
+.equal{
+    background:#59c99b;
+    color:white;
+}
+
+.dark{
+background:#121212;
+color:white;
+}
+
+.dark .calculator{
+background:#1e1e1e;
+}
+
+.dark .display{
+background:#2b2b2b;
+color:white;
+}
+
+.dark button{
+background:#333;
+color:white;
+}
+
+.clear{
+    background:#df5d5d;
+    color:white;
+}
+
+.history-container{
+    width: 100%;
+    margin-top: 10px;
+}
+
+.history-header{
+
+    padding: 12px;
+
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    border-radius: 10px;
+
+    cursor: pointer;
+
+    font-weight: bold;
+}
+
+.history-content{
+
+    display: none;
+
+    max-height: 200px;
+
+    overflow-y: auto;
+
+    padding: 10px;
+
+    border-radius: 10px;
+
+    margin-top: 5px;
+}
+
+.history-content.active{
+    display: block;
+}
+
+.history-item{
+
+    padding: 8px;
+
+    margin-bottom: 5px;
+
+    border-radius: 8px;
+
+    font-size: 15px;
+}
+
+.mode{
+display:flex;
+justify-content:space-between;
+margin-bottom:10px;
+}
+
+/* Panneau avancé */
+
+#advancedPanel{
+    display:none;
+    margin-top:15px;
+    grid-template-columns:repeat(4,1fr);
+    gap:10px;
+	max-height:220px;
+	overflow-y:auto;
+}
+
+#advancedPanel.show{
+    display:grid;
+}
+
+#toggleAdvanced{
+    background:#7a7df0;
+    color:white;
+}
+
+/* Responsive Mobile */
+
+@media(max-width:600px){
+      
+	  .calculator{
+	      width:100%;
+		  height:100vh;
+	      max-width:none;
+		  padding:8px;
+		  border-radius:0;
+		  margin:0;
+	}
+	
+	.buttons{
+	     display:grid;
+	     grid-template-columns:repeat(5,1fr);
+	     gap:8px;
+		 width:100%;
+	}
+	
+	button{
+	     width:100%;
+	     height:58px;
+		 border:none;
+		 border-radius:16px;
+		 font-size:18px;
+	}
+	
+	.display{
+	     height:80px;
+		 font-size:28px;
+		 min-height:80px;
+		 flex-shrink:0;
+	}
+	
+	.top-buttons button{
+	     width:50px;
+		 height:40px;
+		 font-size:16px;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="calculator">
+
+<div class="top-buttons">
+<button>DEG</button>
+<button>RAD</button>
+<button onclick="toggleDark()">🌙</button>
+<button id="toggleAdvanced">SCI</button>
+
+</div>
+
+<div id="history"></div>
+
+<input type="text" id="display" class="display" readonly>
+
+<div class="history-container">
+
+    <div class="history-header" onclick="toggleHistory()">
+        <span>📜 History</span>
+        <span id="arrow">▼</span>
+    </div>
+
+    <div class="history-content" id="historyContent"></div>
+
+</div>
+
+<div class="buttons">
+	
+<button class="clear" onclick="clearDisplay()">C</button>
+<button onclick="clearHistory()">🗑️</button>
+<button onclick="backspace()">⌫</button>
+<button onclick="appendValue('(')">(</button>
+<button onclick="appendValue(')')">)</button>
+<button onclick="appendValue('%')">%</button>
+
+<button onclick="appendValue('7')">7</button>
+<button onclick="appendValue('8')">8</button>
+<button onclick="appendValue('9')">9</button>
+<button class="operator" onclick="appendValue('/')">÷</button>
+<button onclick="appendValue('Math.sqrt(')">√</button>
+
+<button onclick="appendValue('4')">4</button>
+<button onclick="appendValue('5')">5</button>
+<button onclick="appendValue('6')">6</button>
+<button class="operator" onclick="appendValue('*')">×</button>
+<button onclick="appendValue('**2')">x²</button>
+
+<button onclick="appendValue('1')">1</button>
+<button onclick="appendValue('2')">2</button>
+<button onclick="appendValue('3')">3</button>
+<button class="operator" onclick="appendValue('-')">−</button>
+<button onclick="appendValue('**3')">x³</button>
+
+<button onclick="appendValue('0')">0</button>
+<button onclick="appendValue('.')">.</button>
+<button onclick="appendValue('Math.PI')">π</button>
+<button class="operator" onclick="appendValue('+')">+</button>
+<button onclick="appendValue('Math.E')">e</button>
+
+<button class="btn-ai">🤖 AI</button>
+<button class="btn-goal">🎯 GOAL</button>
+<button class="equal" onclick="calculate()">=</button>
+
+</div>
+
+<!-- Fonctions avancées -->
+
+<div id="advancedPanel">
+
+<button onclick="appendValue('Math.sin(')">sin</button>
+<button onclick="appendValue('Math.cos(')">cos</button>
+<button onclick="appendValue('Math.tan(')">tan</button>
+<button onclick="appendValue('Math.log10(')">log</button>
+
+<button onclick="appendValue('Math.log(')">ln</button>
+<button onclick="appendValue('Math.asin(')">asin</button>
+<button onclick="appendValue('Math.acos(')">acos</button>
+<button onclick="appendValue('Math.atan(')">atan</button>
+
+<button onclick="appendValue('Math.sinh(')">sinh</button>
+<button onclick="appendValue('Math.cosh(')">cosh</button>
+<button onclick="appendValue('Math.tanh(')">tanh</button>
+<button onclick="appendValue('Math.exp(')">exp</button>
+
+<button onclick="appendValue('Math.abs(')">abs</button>
+<button onclick="appendValue('Math.floor(')">floor</button>
+<button onclick="appendValue('Math.ceil(')">ceil</button>
+<button onclick="appendValue('Math.random()')">rand</button>
+
+<button onclick="appendValue('!')">n!</button>
+<button onclick="appendValue('1/')">1/x</button>
+<button onclick="appendValue('**')">xʸ</button>
+<button onclick="appendValue('Math.cbrt(')">³√</button>
+
+</div>
+
+</div>
+
+<script>
+
+const display = document.getElementById("display");
+
+function appendValue(value){
+
+    const operators = ["+","-","*","/","%"];
+	
+	let lastChar = 
+	display.value.slice(-1);
+	
+	if(
+	    operators.includes(lastChar) &&
+		operators.includes(value)
+	){
+	    return;
+	}
+	
+    display.value += value;
+}
+
+function clearDisplay(){
+    display.value = "";
+}
+
+function toggleDark(){
+document.body.classList.toggle("dark");
+}
+
+function backspace(){
+    display.value = display.value.slice(0,-1);
+}
+
+// Bouton AI
+document.querySelector(".btn-ai").addEventListener("click", function() {
+       alert("🤖 ECCV AI ap vini byento!");
+});
+
+// Bouton GOAL
+document.querySelector(".btn-goal").addEventListener("click", function() {
+
+     let objectif = prompt("🎯 Antre objektif ou:");
+	 
+	 if(objectif){
+	      alert("objektif anrejistre : " + objectif);
+	  }
+});
+	 
+
+function calculate(){
+
+    try{
+
+        let expression = display.value;
+
+        expression = expression.replace(/(\d+)!/g, function(match, number){
+		
+            let fact = 1;
+
+            for(let i=1; i <= number; i++){
+                fact *= i;
+            }
+
+            return fact;
+        });
+		
+		let openCount = (expression.match(/\(/g) ||
+		[]).length;
+		let closeCount = (expression.match(/\)/g) ||
+		[]).length;
+		
+		while(closeCount < openCount){
+		    expression += ")";
+			closeCount++;
+	    }
+		
+		console.log(expression);
+		
+		let result = eval(expression);
+
+        addToHistory(expression + " = " + result);
+		
+		display.value = result;
+
+    }catch(error){
+
+        display.value = "Expression invalide";
+
+    }
+	
+}
+
+/* Bouton panneau avancé */
+
+const toggleBtn = document.getElementById("toggleAdvanced");
+const advancedPanel = document.getElementById("advancedPanel");
+
+toggleBtn.addEventListener("click", () => {
+
+    advancedPanel.classList.toggle("show");
+
+    if(advancedPanel.classList.contains("show")){
+        toggleBtn.innerHTML = "⬅️";
+    }else{
+        toggleBtn.innerHTML = "SCI";
+    }
+
+});
+
+
+
+function toggleHistory(){
+
+    const history = 
+	document.getElementById("historyContent");
+	
+    const arrow = 
+	document.getElementById("arrow");
+
+    history.classList.toggle("active");
+
+    if(history.classList.contains("active")){
+        arrow.innerHTML = "▲";
+    }else{
+        arrow.innerHTML = "▼";
+    }
+}
+
+
+function addToHistory(text){
+
+    const history = document.getElementById("historyContent");
+
+    history.innerHTML += `
+        <div class="history-item">${text}</div>
+    `;
+}
+
+function clearHistory(){
+
+     document.getElementById(
+	     "historyContent"
+	).innerHTML = "";
+	
+}
+
+</script>
+
+</body>
+</html>
