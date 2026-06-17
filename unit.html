@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Unit Converter</title>
+<style>
+*{box-sizing:border-box;font-family:Segoe UI,sans-serif}
+body{margin:0;background:#f4f4f4}
+header{padding:16px;font-size:22px;font-weight:700;background:#4f46e5;color:#fff}
+.container{max-width:700px;margin:auto;padding:12px}
+.tabs{display:flex;gap:8px;overflow:auto;margin-bottom:12px}
+.tabs button,.key{border:none;border-radius:14px;padding:10px;cursor:pointer}
+.tabs button{background:#fff}
+.card{background:#fff;border-radius:18px;padding:14px;margin-bottom:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+.display{font-size:34px;font-weight:700;text-align:right}
+.row{display:flex;gap:10px}
+.row select{flex:1;padding:10px;border-radius:12px}
+.keyboard{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.key{height:60px;font-size:22px}
+.result{font-size:20px;padding:8px 0}
+.equal{background:#4FD1A5;color:white}
+.clear-history-btn{background:#e53935;color:white;border:none;padding:10px 15px;border-radius:12px;cursor:pointer;margin-bottom:10px}
+@media(max-width:600px){.display{font-size:28px}}
+</style>
+</head>
+<body>
+<header>📏 Unit Converter</header>
+<div class="container">
+<div class="tabs">
+<div class="tabs">
+<button onclick="changeCategory('length')">Longueur</button>
+<button onclick="changeCategory('area')">Aire</button>
+<button onclick="changeCategory('volume')">Volume</button>
+<button onclick="changeCategory('mass')">Masse</button>
+<button onclick="changeCategory('time')">Temps</button>
+<button onclick="changeCategory('temperature')">Température</button>
+<button onclick="changeCategory('speed')">Vitesse</button>
+<button onclick="changeCategory('currency')">
+💰 Monnaie
+</button>
+</div>
+</div>
+
+<div class="card">
+<div id="display" class="display">0</div>
+</div>
+
+<div class="card">
+<div class="row">
+
+<select id="fromUnit">
+<option value="m">Mètre</option>
+<option value="cm">Centimètre</option>
+<option value="km">Kilomètre</option>
+<option value="ft">Pied</option>
+<option value="in">Pouce</option>
+</select>
+
+<select id="toUnit">
+<option value="ft">Pied</option>
+<option value="in">Pouce</option>
+<option value="m">Mètre</option>
+<option value="cm">Centimètre</option>
+<option value="km">Kilomètre</option>
+</select>
+
+</div>
+</div>
+
+<div class="card">
+<div id="result" class="result">0</div>
+</div>
+
+<div class="keyboard">
+<button class="key" onclick="addNumber('7')">7</button>
+<button class="key" onclick="addNumber('8')">8</button>
+<button class="key" onclick="addNumber('9')">9</button>
+<button class="key" onclick="clearDisplay()">AC</button>
+<button class="key" onclick="addNumber('4')">4</button>
+<button class="key" onclick="addNumber('5')">5</button>
+<button class="key" onclick="addNumber('6')">6</button>
+<button class="key" onclick="backspace()">⌫</button>
+<button class="key" onclick="addNumber('1')">1</button>
+<button class="key" onclick="addNumber('2')">2</button>
+<button class="key" onclick="addNumber('3')">3</button>
+<button class="key" onclick="swapUnits()">⇄</button>
+<button class="key" onclick="addNumber('00')">00</button>
+<button class="key" onclick="addNumber('0')">0</button>
+<button class="key" onclick="addNumber('.')">.</button>
+<button class="key" onclick="convertUnits()">=</button>
+</div>
+</div>
+
+<script>
+
+// ======================
+// DISPLAY
+// ======================
+
+let currentValue = "0";
+
+function updateDisplay() {
+    document.getElementById("display").innerText = currentValue;
+}
+
+function addNumber(num) {
+
+    if (currentValue === "0") {
+        currentValue = num;
+    } else {
+        currentValue += num;
+    }
+
+    updateDisplay();
+    convertUnits();
+}
+
+function clearDisplay() {
+    currentValue = "0";
+    updateDisplay();
+}
+
+function backspace() {
+
+    currentValue =
+    currentValue.slice(0, -1);
+
+    if (currentValue === "") {
+        currentValue = "0";
+    }
+
+    updateDisplay();
+    convertUnits();
+}
+
+let historyList = [];
+
+function saveHistory(text){
+
+    if(historyList[historyList.length - 1] === text){
+        return;
+    }
+
+    historyList.push(text);
+
+    localStorage.setItem(
+        "converter_history",
+        JSON.stringify(historyList)
+    );
+
+    displayHistory();
+}
+
+function displayHistory(){
+
+    let box =
+    document.getElementById("history");
+
+    if(!box) return;
+
+    box.innerHTML = "";
+
+    historyList
+    .slice()
+    .reverse()
+    .forEach(item=>{
+
+        box.innerHTML += `
+        <div style="padding:6px;border-bottom:1px solid #ddd">
+            ${item}
+        </div>
+        `;
+
+    });
+
+}
+
+// ======================
+// SWAP
+// ======================
+
+function swapUnits() {
+
+    let from =
+    document.getElementById("fromUnit");
+
+    let to =
+    document.getElementById("toUnit");
+
+    let temp = from.value;
+
+    from.value = to.value;
+
+    to.value = temp;
+
+    convertUnits();
+}
+
+function convertUnits(){
+
+    let value = parseFloat(currentValue);
+
+    if (isNaN(value)) return;
+
+    let from = document.getElementById("fromUnit").value;
+    let to = document.getElementById("toUnit").value;
+
+    let result = value;
+
+    // LONGUEUR
+    const length = {
+        m:1,
+        cm:0.01,
+        km:1000,
+        ft:0.3048,
+        in:0.0254
+    };
+
+    // AIRE
+    const area = {
+        m2:1,
+        cm2:0.0001,
+        km2:1000000
+    };
+
+    // VOLUME
+    const volume = {
+        l:1,
+        ml:0.001,
+        m3:1000
+    };
+
+    // MASSE
+    const mass = {
+        kg:1,
+        g:0.001,
+        lb:0.453592
+    };
+
+    // TEMPS
+    const time = {
+        s:1,
+        min:60,
+        h:3600
+    };
+	
+	// VITESSE
+    const speed = {
+        ms:1,
+        kmh:0.277778,
+        mph:0.44704
+	};
+
+    //MONNAIE
+    const currency = {
+      USD:1,
+      HTG:132,
+      EUR:0.87
+    };
+	
+    // LONGUEUR
+    if(length[from] && length[to]){
+        result = value * length[from] / length[to];
+    }
+
+    // AIRE
+    else if(area[from] && area[to]){
+        result = value * area[from] / area[to];
+    }
+
+    // VOLUME
+    else if(volume[from] && volume[to]){
+        result = value * volume[from] / volume[to];
+    }
+
+    // MASSE
+    else if(mass[from] && mass[to]){
+        result = value * mass[from] / mass[to];
+    }
+
+    // TEMPS
+    else if(time[from] && time[to]){
+        result = value * time[from] / time[to];
+    }
+
+    // VITESSE
+    else if(speed[from] && speed[to]){
+        result = value * speed[from] / speed[to];
+    }
+     
+	//MONNAIE
+	else if(currency[from] && currency[to]){
+    result =
+    value *
+    currency[from] /
+    currency[to];
+    }
+
+    // TEMPÉRATURE
+    else if(from === "c" && to === "f"){
+        result = (value * 9/5) + 32;
+    }
+
+    else if(from === "f" && to === "c"){
+        result = (value - 32) * 5/9;
+    }
+
+    else if(from === "c" && to === "k"){
+        result = value + 273.15;
+    }
+
+    else if(from === "k" && to === "c"){
+        result = value - 273.15;
+    }
+
+    else if(from === "f" && to === "k"){
+        result = ((value - 32) * 5/9) + 273.15;
+    }
+
+    else if(from === "k" && to === "f"){
+        result = ((value - 273.15) * 9/5) + 32;
+    }
+
+    document.getElementById("result").innerHTML =
+        result.toFixed(6) + " " + to;
+
+    saveHistory(
+        value + " " + from +
+        " → " +
+        result.toFixed(6) +
+        " " + to
+    );
+}
+    
+
+
+window.onload = function(){
+
+    updateDisplay();
+
+    historyList =
+    JSON.parse(
+        localStorage.getItem("converter_history")
+    ) || [];
+
+    favorites =
+    JSON.parse(
+        localStorage.getItem("converter_favorites")
+    ) || [];
+
+    displayHistory();
+    displayFavorites();
+};
+
+function changeCategory(type){
+
+    let from = document.getElementById("fromUnit");
+    let to = document.getElementById("toUnit");
+
+    from.innerHTML = "";
+    to.innerHTML = "";
+
+    let units = [];
+
+    switch(type){
+
+        case "length":
+            units = [
+                ["m","Mètre"],
+                ["cm","Centimètre"],
+                ["km","Kilomètre"],
+                ["ft","Pied"],
+                ["in","Pouce"]
+            ];
+            break;
+
+        case "area":
+            units = [
+                ["m2","Mètre²"],
+                ["cm2","Centimètre²"],
+                ["km2","Kilomètre²"]
+            ];
+            break;
+
+        case "volume":
+            units = [
+                ["l","Litre"],
+                ["ml","Millilitre"],
+                ["m3","Mètre³"]
+            ];
+            break;
+
+        case "mass":
+            units = [
+                ["kg","Kilogramme"],
+                ["g","Gramme"],
+                ["lb","Livre"]
+            ];
+            break;
+
+        case "time":
+            units = [
+                ["s","Seconde"],
+                ["min","Minute"],
+                ["h","Heure"]
+            ];
+            break;
+
+        case "temperature":
+            units = [
+                ["c","Celsius"],
+                ["f","Fahrenheit"],
+                ["k","Kelvin"]
+            ];
+            break;
+
+        case "speed":
+            units = [
+                ["ms","m/s"],
+                ["kmh","km/h"],
+                ["mph","mph"]
+            ];
+            break;
+			
+		case "currency":
+    units = [
+        ["USD","Dollar US"],
+        ["HTG","Gourde"],
+        ["EUR","Euro"]
+    ];
+    break;
+    }
+
+    units.forEach(unit => {
+
+        let option1 = document.createElement("option");
+        option1.value = unit[0];
+        option1.textContent = unit[1];
+        from.appendChild(option1);
+
+        let option2 = document.createElement("option");
+        option2.value = unit[0];
+        option2.textContent = unit[1];
+        to.appendChild(option2);
+
+    });
+
+    if(units.length > 1){
+        to.selectedIndex = 1;
+    }
+
+    convertUnits();
+}
+
+let favorites = [];
+
+function addFavorite(){
+
+    let text =
+    document.getElementById("result")
+    .innerText;
+
+    favorites.push(text);
+
+    localStorage.setItem(
+        "converter_favorites",
+        JSON.stringify(favorites)
+    );
+
+    displayFavorites();
+}
+function toggleFavorites(){
+     
+	 const box =
+	 document.getElementById(
+	    "favoritesContainer"
+	);
+	
+	const arrow =
+	document.getElementById(
+	    "favArrow"
+	);
+	
+	if(box.style.display === "none") {
+	
+	  box.style.display = "block";
+	  arrow.innerHTML = "▼";
+	
+	} else {
+	
+	  box.style.display = "none";
+	  arrow.innerHTML = "▲";
+	  
+    }
+}
+
+function displayFavorites(){
+
+    let box =
+    document.getElementById("favorites");
+
+    if(!box) return;
+
+    box.innerHTML = "";
+
+    favorites.forEach(item=>{
+
+        box.innerHTML += `
+        <div style="padding:6px">
+            ⭐ ${item}
+        </div>
+        `;
+
+    });
+
+}
+
+function clearHistory(){
+   
+   if(confirm("Voulez-vous supprimer tout l'historique ?")){
+   
+ localStorage.removeItem("unitHistory");
+   
+   let container =
+   document.getElementById("history");
+   
+   container.innerHTML = "";
+  }
+}
+
+</script>
+</body>
+</html>
