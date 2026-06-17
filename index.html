@@ -87,9 +87,10 @@ body{
 	
 	display:flex;
 	flex-direction:column;
-	justify-content:center;
+	justify-content:flex-end;
 	align-items:flex-end;
 	overflow:hidden;
+	white-space: nowrap;
 
 }
 
@@ -100,9 +101,9 @@ body{
 	 text-align:right;
 	 
 	 white-space:nowrap;
-	 overflow:hidden;
-	 text-overflow:ellipsis;
 	 overflow-x:auto;
+	 overflow-y:hidden;
+	 scrollbar-width:none;
 }	 
 
 .result{
@@ -114,7 +115,7 @@ body{
 	  white-space:nowrap;
 	  overflow:hidden;
 	  text-overflow:ellipsis;
-	  overflow-x:45px;
+	  overflow-x:auto;
 
 } 
 
@@ -527,6 +528,10 @@ margin-bottom:10px;
     min-height:50px;
 }
 
+#display{
+    overflow-x: auto;
+	white-space: nowrap;
+}
 
 </style>
 </head>
@@ -647,13 +652,30 @@ src="https://cdn.jsdelivr.net/npm/nerdamer@latest/nerdamer.core.js"></script>
 
 <script>
 
+/*
 const display = document.getElementById("display");
+
+const max = 25;
+
+if (expression.length > max) {
+    display.textContent = "..." +
+expression.slice(max - 3);
+} else {
+   display.textContent = expression;
+}
+*/
+/*
+function updateDisplay(text) {
+    display.textContent = text;
+	display.scrollRigth =
+display.scrollWidth;
+}
 
 const resultBox =
 document.getElementById("result");
 resultBox.scrollLeft =
 resultBox.scrollWidth;
-
+*/
 
 function appendValue(value){
 
@@ -664,9 +686,10 @@ function appendValue(value){
 	  document.getElementById("display");
 	  
 	  expression.innerText += value;
-	  
 	  display.value += value;
-
+	  
+	  expression.scrollLeft =
+	  expression.scrollWidth;
 }
 
 function clearDisplay(){
@@ -697,9 +720,8 @@ function backspace(){
 	display.value =
 	display.value.slice(0,-1);
 	
-	updatePreview();
 }
-
+  
 /*
 // Bouton AI
 document.getElementById("aiBtn")
@@ -890,6 +912,16 @@ function clearHistory(){
 function openUnitConverter(){
  window.location.href= "unit.html";
  }
+ 
+function updateExpression(text){
+   const exp =
+document.getElementById("expression");
+
+   exp.innerText = text;
+   
+   //Ale sou bo dwat la otomatikman
+   exp.scrollLeft = exp.scrollWidth;
+}
 
 </script>
 
