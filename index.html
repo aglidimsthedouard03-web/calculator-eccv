@@ -73,14 +73,14 @@ body{
 
 .display{
     width:100%;
-	min-height:95px;
-    height:95px;
+	min-height:140px;
+    height:150px;
     border:none;
     background:#f5f5fb;
     text-align:right;
     font-size:70px;
 	padding:20px;
-    margin-bottom:15px;
+    margin-bottom:5px;
     border-radius:30px;
 	box-sizing:border-box;
 	box-shadow:inset 0 2px 8px rgba(0,0,0,0.05);
@@ -102,10 +102,11 @@ body{
 	 white-space:nowrap;
 	 overflow:hidden;
 	 text-overflow:ellipsis;
-}
+	 overflow-x:auto;
+}	 
 
 .result{
-      font-size:32px;
+      font-size:34px;
 	  font-weight:bold;
 	  width:100%;
 	  text-align:right;
@@ -113,23 +114,31 @@ body{
 	  white-space:nowrap;
 	  overflow:hidden;
 	  text-overflow:ellipsis;
-	  overflow-x:auto;
+	  overflow-x:45px;
+
 } 
 
 .buttons{
 	
     display:grid;
-	
+	width:100%;
     grid-template-columns:repeat(5,1fr);
-	
-    gap:8px;
-	 margin-top:5px;
+	align-items:stretch;
+    gap:12px;
 
+}
+
+buttons button{
+    height:80px;
+	border:none;
+	border-radius:22px;
+	font-size:20px;
+	font-weight:600;
 }
 
 button{
 	width:100%;
-	height:52px;
+	height:58px;     
     border:none;
 	border-radius:18px;
     font-size:18px;
@@ -140,7 +149,7 @@ button{
 		
 	transition:0.2s;
 }
-
+ 
 .display-container{
      padding:20px;
 	 text-align:right;
@@ -151,36 +160,32 @@ button{
 	 color:#666;
 }
 
-#previewResult{
-      font-size:42px;
-	  font-weight:bold;
-	  color:#000;
-}
 
 .btn-ai{
-     background:#6C63FF;
+     background:#3498db;
 	 color:white;
 	 font-size:18px;
 	 font-weight:bold;
 }
 
-.btn-goal{
-     background:#00C9A7;
-	 color:white;
-	 font-size:18px;
-	 font-weight:bold;
+.btn-unit{
+   background:#3498db;
+    color:white;
+	height:58px;
+	font-size:18px;
+	font-weight:bold;
 }
 
 .operator{
-    background:#FFC542;
+    background:#f8c443;
     color:white;
 }
 
 .equal{
-    grid-column:span 2;
     background:#4FD1A5;
     color:white;
-	font-size:32px;
+	height:58px;
+	font-size:24px;
 	font-weight:bold;
 }
 
@@ -203,34 +208,13 @@ background:#333;
 color:white;
 }
 
-.dark body{
-    background:#121212;
-}
-
-.dark .history-header,
-.dark .history-content,
-.dark .history-item{
-    color:white;
-}
-
-.dark #expression{
-    color:#bdbdbd;
-}
-
-.dark .result{
-     color:white;
-}
-
-body.dark #advancedPanel{
-   background:#1e1e1e ! important;
-  
+.dark #advancedPanel{
+   background:#1e1e1e;
  }
  
-body.dark #advancedPanel button{
-   background:#2f2f2f !important;
-   color:#ffffff !important;
-   border:1px solid #444 !important;
-}
+.dark #advancedPanel button{
+   background:#2b2b2b;
+ }
 
 .clear{
     background:#df5d5d;
@@ -239,7 +223,8 @@ body.dark #advancedPanel button{
 
 .history-container{
     width: 100%;
-    margin-top: 5px;
+    margin-top:0;
+	margin-bottom:10px;
 }
 
 .history-header{
@@ -250,7 +235,7 @@ body.dark #advancedPanel button{
     justify-content: center;
     align-items: center;
 	gap:15px;
-	margin:5px 0;
+	margin:15px 0;
 
     border-radius: 10px;
 
@@ -293,6 +278,27 @@ body.dark #advancedPanel button{
      gap:14px;
 }
 
+#aiPanel{
+    position:fixed;
+    top:10%;
+    left:5%;
+    width:90%;
+    background:#222;
+    padding:15px;
+    border-radius:15px;
+    z-index:1000;
+}
+
+.hidden{
+    display:none;
+}
+
+#question{
+    width:100%;
+    height:100px;
+    font-size:18px;
+}
+
 .mode{
 display:flex;
 justify-content:space-between;
@@ -302,20 +308,22 @@ margin-bottom:10px;
 /* Panneau avancé */
 
 #advancedPanel{
-	
-	display:none;
-	margin-top:5px;
-	width:100%;
-	
-	padding:8px;
-    height:50px;
-	border-radius:20px;
-	box-shadow:0 -5px 20px rgba(0,0,0,.15);
-	grid-template-columns:repeat(5,1fr);
-	gap:8px;
-	box-sizing:border-box;
+ 
+    display:none;
+    margin-top:10px;
+    width:100%;
 
-	background:white;
+    padding:8px;
+
+    border-radius:20px;
+	overflow-y:auto;
+    grid-template-columns:repeat(5,1fr);
+ 	box-shadow:0 -5px 20px rgba(0,0,0,.15);
+    gap:8px;
+
+    box-sizing:border-box;
+
+    background:white;
 }
 
 #advancedPanel.show{
@@ -332,10 +340,10 @@ margin-bottom:10px;
 }
 
 #advancedPanel button{
-    height:42px;
-	border-radius:12px;
+    height:50px;
+	border-radius:15px;
 	background:white;
-	font-size:14px;
+	font-size:16px;
 }
 
 /* Responsive Mobile */
@@ -368,10 +376,11 @@ margin-bottom:10px;
 	}
 	
 	.display{
-	     height:100px;
-		 font-size:70px;
-		 min-height:90px;
+	     height:110px;
+		 min-height:110px;
+		 padding:15px;
 		 flex-shrink:0;
+		 
 	}
 	
 	.top-buttons button{
@@ -380,10 +389,144 @@ margin-bottom:10px;
 		 font-size:16px;
     }
 	
+     .result{
+	     font-size:36px;
+	}
+	
+	.expression{
+	     font-size:18px;
+	}
+	
 #advancedPanel{
       grid-template-columns:repeat(5,1fr);
      }
 }
+
+#aiModal{
+    display:none;
+
+    position:fixed;
+
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    background:rgba(0,0,0,.55);
+
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.ai-box{
+
+    width:90%;
+    max-width:450px;
+
+    background:white;
+  border-radius:25px;
+
+    padding:20px;
+
+    box-sizing:border-box;
+}
+
+.ai-box h2{
+    text-align:center;
+    margin-bottom:15px;
+}
+
+.ai-box textarea{
+
+    width:100%;
+
+    height:140px;
+
+    border:none;
+
+    background:#f3f4f8;
+
+    border-radius:15px;
+
+    padding:15px;
+
+    resize:none;
+
+    font-size:16px;
+
+    box-sizing:border-box;
+}
+
+.ai-buttons{
+
+    display:flex;
+
+    gap:10px;
+
+    margin-top:15px;
+}
+
+.ai-buttons button{
+
+    flex:1;
+}
+
+#aiResult{
+
+    margin-top:15px;
+
+    background:#f8f8f8;
+
+    border-radius:15px;
+
+    padding:15px;
+
+    min-height:60px;
+
+    overflow:auto;
+}
+
+#unitModal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+.unit-box{
+    width:90%;
+    max-width:420px;
+    background:white;
+    border-radius:25px;
+    padding:20px;
+    box-sizing:border-box;
+}
+
+.unit-box input,
+.unit-box select{
+    width:100%;
+    margin:8px 0;
+    padding:12px;
+    border-radius:12px;
+    border:none;
+    background:#f2f2f2;
+    box-sizing:border-box;
+}
+
+#unitResult{
+    margin-top:15px;
+    padding:12px;
+    background:#f7f7f7;
+    border-radius:12px;
+    min-height:50px;
+}
+
 
 </style>
 </head>
@@ -402,7 +545,7 @@ margin-bottom:10px;
 
 <div class="display">
      <div id="expression" class="expression"></div>
-	 <div id="result" class="result"></div>
+	 <div id="result" class="result">0</div>
 	 
 	 <input
 	     type="hidden"
@@ -410,7 +553,6 @@ margin-bottom:10px;
 		 value=""
 		>
 </div>
-
 
 <div class="history-container">
 
@@ -436,7 +578,7 @@ margin-bottom:10px;
 <button onclick="appendValue('8')">8</button>
 <button onclick="appendValue('9')">9</button>
 <button class="operator" onclick="appendValue('/')">÷</button>
-<button onclick="appendValue('Math.sqrt(')">√</button>
+<button onclick="appendValue('√(')">√</button>
 
 <button onclick="appendValue('4')">4</button>
 <button onclick="appendValue('5')">5</button>
@@ -452,13 +594,16 @@ margin-bottom:10px;
 
 <button onclick="appendValue('0')">0</button>
 <button onclick="appendValue('.')">.</button>
-<button onclick="appendValue('Math.PI')">π</button>
+<button onclick="appendValue('00')">00</button>
 <button class="operator" onclick="appendValue('+')">+</button>
-<button onclick="appendValue('Math.E')">e</button>
+<button class="btn-unit"
+onclick="openUnitConverter()">📏 UNIT</button>
+<button onclick="appendValue('π')">π</button>
 
-<button class="btn-ai">🤖 AI</button>
-<button class="btn-goal">🎯 GOAL</button>
 <button class="equal" onclick="calculate()">=</button>
+<button onclick="appendValue('e')">e</button>
+
+<button id="aiBtn" class="btn-ai">🤖 AI</button>
 
 </div>
 
@@ -466,25 +611,25 @@ margin-bottom:10px;
 
 <div id="advancedPanel">
 
-<button onclick="appendValue('Math.sin(')">sin</button>
-<button onclick="appendValue('Math.cos(')">cos</button>
-<button onclick="appendValue('Math.tan(')">tan</button>
-<button onclick="appendValue('Math.log10(')">log</button>
+<button onclick="appendValue('sin(')">sin</button>
+<button onclick="appendValue('cos(')">cos</button>
+<button onclick="appendValue('tan(')">tan</button>
+<button onclick="appendValue('log(')">log</button>
 
-<button onclick="appendValue('Math.log(')">ln</button>
-<button onclick="appendValue('Math.asin(')">asin</button>
-<button onclick="appendValue('Math.acos(')">acos</button>
-<button onclick="appendValue('Math.atan(')">atan</button>
+<button onclick="appendValue('ln(')">ln</button>
+<button onclick="appendValue('asin(')">asin</button>
+<button onclick="appendValue('acos(')">acos</button>
+<button onclick="appendValue('atan(')">atan</button>
 
-<button onclick="appendValue('Math.sinh(')">sinh</button>
-<button onclick="appendValue('Math.cosh(')">cosh</button>
-<button onclick="appendValue('Math.tanh(')">tanh</button>
-<button onclick="appendValue('Math.exp(')">exp</button>
+<button onclick="appendValue('sinh(')">sinh</button>
+<button onclick="appendValue('cosh(')">cosh</button>
+<button onclick="appendValue('tanh(')">tanh</button>
+<button onclick="appendValue('exp(')">exp</button>
 
-<button onclick="appendValue('Math.abs(')">abs</button>
-<button onclick="appendValue('Math.floor(')">floor</button>
-<button onclick="appendValue('Math.ceil(')">ceil</button>
-<button onclick="appendValue('Math.random()')">rand</button>
+<button onclick="appendValue('abs(')">abs</button>
+<button onclick="appendValue('floor(')">floor</button>
+<button onclick="appendValue('ceil(')">ceil</button>
+<button onclick="appendValue('rand()')">rand</button>
 
 <button onclick="appendValue('!')">n!</button>
 <button onclick="appendValue('1/')">1/x</button>
@@ -493,6 +638,11 @@ margin-bottom:10px;
 
 </div>
 
+<script
+src="https://cdn.jsdelivr.net/npm/nerdamer@latest/nerdamer.core.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Algebra.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Calculus.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/nerdamer@latest/Solve.js"></script>
 </div>
 
 <script>
@@ -504,9 +654,10 @@ document.getElementById("result");
 resultBox.scrollLeft =
 resultBox.scrollWidth;
 
+
 function appendValue(value){
 
-      const expression=
+      const expression =
 	  document.getElementById("expression");
 	  
 	  const display =
@@ -515,14 +666,8 @@ function appendValue(value){
 	  expression.innerText += value;
 	  
 	  display.value += value;
-	  
-	  updatePreview();
-}
 
-function updatePreview(){
-     //Pa montre rezilta otomatik
 }
-
 
 function clearDisplay(){
   
@@ -555,49 +700,138 @@ function backspace(){
 	updatePreview();
 }
 
+/*
 // Bouton AI
-document.querySelector(".btn-ai").addEventListener("click", function() {
-       alert("🤖 ECCV AI ap vini byento!");
+document.getElementById("aiBtn")
+.addEventListener("click", function() {
+
+       alert("🤖 C'est le premier lancement des activites Scientifique de l'Ecole Chretienne Chant de Vie (ECCV)
+	   La fonction AI est ajoutee en vue de rendre les calculs et l'apprentissage plus faciles et plus rapides ! ");
 });
+*/
 
-// Bouton GOAL
-document.querySelector(".btn-goal").addEventListener("click", function() {
+function factorial(n){
+    if(n < 0) return NaN;
 
-     let objectif = prompt("🎯 Antre objektif ou:");
+    let r = 1;
+
+    for(let i = 2; i <= n; i++){
+        r *= i;
+    }
+
+    return r;
+}
 	 
-	 if(objectif){
-	      alert("objektif anrejistre : " + objectif);
-	  }
-});
-	 
-
 function calculate(){
         
 		  try{
 		  
-		let expression =
-		
+		let exp = 
 document.getElementById("display").value;
+   
+    let originalExp = exp;
+		
+exp = exp.replaceAll("π","Math.PI");
+exp = exp.replaceAll("sin(","Math.sin(");
 
-        let result = eval(expression);
+exp = exp.replaceAll("cos(","Math.cos(");
+exp = exp.replaceAll("tan(","Math.tan(");
+exp = exp.replaceAll("log(","Math.log10(");
+
+exp = exp.replaceAll("ln(","Math.log(");
+exp = exp.replaceAll("√(","Math.sqrt(");
+exp = exp.replaceAll("e","Math.E");
+
+exp = exp.replaceAll("asin(","Math.asin(");
+exp = exp.replaceAll("acos(","Math.acos(");
+exp = exp.replaceAll("atan(","Math.atan(");
+
+exp = exp.replaceAll("sinh(","Math.sinh(");
+exp = exp.replaceAll("cosh(","Math.cosh(");
+exp = exp.replaceAll("tanh(","Math.tanh(");
+
+exp = exp.replaceAll("rand()","Math.random()");
+exp = exp.replaceAll("exp(","Math.exp(");
+exp = exp.replace(/(\d+)!/g, (_, n) =>
+    factorial(parseInt(n))
+);
+
+exp = exp.replaceAll("abs(","Math.abs(");
+exp = exp.replaceAll("floor(","Math.floor(");
+exp = exp.replaceAll("ceil(","Math.ceil(");
+ 
+ //Fèmen parantèz otomatikman
+ 
+ let openCount = 
+ (exp.match(/\(/g) || []).length;
+ 
+ let closeCount =
+ (exp.match(/\)/g) || []).length;
+ 
+ while(closeCount < openCount){
+ 
+     exp += ")";
+	 closeCount++;
+}
+ 
+        console.log(exp);
+        let result = eval(exp);
 		
 document.getElementById("result").innerText = result;
 
 document.getElementById("display").value = result;
   
-           addToHistory(expression + " = " + result);
+           addToHistory(
+		      originalExp + " = " + result);
 
         }catch(error){
 		
 document.getElementById("result").innerText = "Erreur";
 
-const display =
-document.getElementById("display");
-
-console.log("SCRIPT CHARGE");
       }
  }
 	  
+const aiBtn = document.getElementById("aiBtn");
+const aiPanel = document.getElementById("aiPanel");
+
+aiBtn.onclick = () =>{
+    aiPanel.classList.toggle("hidden");
+};
+
+async function solveMath(){
+
+    const question =
+        document.getElementById("question").value;
+
+    const response = await fetch(
+        "URL_API_OU",
+        {
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json",
+                "Authorization":"Bearer API_KEY_OU"
+            },
+            body:JSON.stringify({
+                model:"gpt-4.1-mini",
+                messages:[
+                    {
+                        role:"system",
+                        content:"Ou se yon pwofesè matematik. Bay etap rezolisyon yo ak repons final la."
+                    },
+                    {
+                        role:"user",
+                        content:question
+                    }
+                ]
+            })
+        }
+    );
+
+    const data = await response.json();
+
+    document.getElementById("answer").innerHTML =
+        data.choices[0].message.content;
+}
 
 /* Bouton panneau avancé */
 
@@ -608,9 +842,11 @@ toggleBtn.addEventListener("click", () => {
 
     advancedPanel.classList.toggle("show");
 
-        toggleBtn.innerHTML = advancedPanel.classList.contains("show")
-		? "⬇️"
-		: "SCI";
+    if(advancedPanel.classList.contains("show")){
+        toggleBtn.innerHTML = "⬅️";
+    }else{
+        toggleBtn.innerHTML = "SCI";
+    }
 
 });
 
@@ -650,6 +886,10 @@ function clearHistory(){
 	).innerHTML = "";
 	
 }
+
+function openUnitConverter(){
+ window.location.href= "unit.html";
+ }
 
 </script>
 
