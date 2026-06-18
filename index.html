@@ -811,13 +811,13 @@ document.getElementById("result").innerText = "Erreur";
 
       }
  }
-	  
-const aiBtn = document.getElementById("aiBtn");
-const aiPanel = document.getElementById("aiPanel");
+ 
+ document.getElementById("aiBtn").onclick = function() {
 
-aiBtn.onclick = () =>{
-    aiPanel.classList.toggle("hidden");
+    alert("🤖Le mode programmation de l'Intelligence Artificielle (AI) foctionnera sous-peu. À travers lequel nous pouvons résoudre de manière automatique et rationnelle des exercices mathématiques, physiques, chimie et économie. \n\nMeçi pour votre patience.");
+
 };
+
 
 async function solveMath(){
 
@@ -853,6 +853,7 @@ async function solveMath(){
     document.getElementById("answer").innerHTML =
         data.choices[0].message.content;
 }
+
 
 /* Bouton panneau avancé */
 
