@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="viewport" content="width=device-width, initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<link rel="manifest" href="manifest.json">
 <title>Calculatrice Scientifique ECCV</title>
 
 <style>
@@ -541,13 +542,13 @@ margin-bottom:10px;
 <div class="calculator">
 
 <div class="top-buttons">
-<button>DEG</button>
-<button>RAD</button>
+<button id="degBtn" onclick="setAngleMode('DEG')">DEG</button>
+
+<button id="radBtn" onclick="setAngleMode('RAD')">RAD</button>
 <button onclick="toggleDark()">🌙</button>
 <button id="toggleAdvanced">SCI</button>
 
 </div>
-
 <div class="display">
      <div id="expression" class="expression"></div>
 	 <div id="result" class="result">0</div>
@@ -703,6 +704,15 @@ document.getElementById("display").value = "";
 
 function toggleDark(){
 document.body.classList.toggle("dark");
+
+refreshAngleButtons();
+}
+
+function refreshAngleButtons(){
+
+    if(typeof angleMode !== "undefined"){
+        setAngleMode(angleMode);
+    }
 }
 
 function backspace(){
@@ -743,6 +753,45 @@ function factorial(n){
     return r;
 }
 	 
+let angleMode = "DEG";
+
+function setAngleMode(mode){
+
+    angleMode = mode;
+
+    const degBtn = document.getElementById("degBtn");
+    const radBtn = document.getElementById("radBtn");
+
+    // Reset
+    degBtn.style.background = "#ffffff";
+    radBtn.style.background = "#ffffff";
+
+    degBtn.style.color = "#000000";
+    radBtn.style.color = "#000000";
+
+    // Bouton aktif
+    if(mode === "DEG"){
+        degBtn.style.background = "#4f46e5";
+        degBtn.style.color = "#ffffff";
+    }else{
+        radBtn.style.background = "#4f46e5";
+        radBtn.style.color = "#ffffff";
+    }
+
+    // Si Dark Mode aktive
+    if(document.body.classList.contains("dark")){
+
+        degBtn.style.background =
+            mode === "DEG" ? "#4f46e5" : "#333";
+
+        radBtn.style.background =
+            mode === "RAD" ? "#4f46e5" : "#333";
+
+        degBtn.style.color = "#ffffff";
+        radBtn.style.color = "#ffffff";
+    }
+}
+	 
 function calculate(){
         
 		  try{
@@ -753,11 +802,32 @@ document.getElementById("display").value;
     let originalExp = exp;
 		
 exp = exp.replaceAll("π","Math.PI");
-exp = exp.replaceAll("sin(","Math.sin(");
 
+exp = exp.replaceAll("log(","Math.log10(");
+if(angleMode === "DEG"){
+
+exp = exp.replaceAll(
+"sin(",
+"Math.sin(Math.PI/180*"
+);
+
+exp = exp.replaceAll(
+"cos(",
+"Math.cos(Math.PI/180*"
+);
+
+exp = exp.replaceAll(
+"tan(",
+"Math.tan(Math.PI/180*"
+);
+
+}else{
+
+exp = exp.replaceAll("sin(","Math.sin(");
 exp = exp.replaceAll("cos(","Math.cos(");
 exp = exp.replaceAll("tan(","Math.tan(");
-exp = exp.replaceAll("log(","Math.log10(");
+
+}
 
 exp = exp.replaceAll("ln(","Math.log(");
 exp = exp.replaceAll("√(","Math.sqrt(");
@@ -923,6 +993,16 @@ document.getElementById("expression");
    exp.scrollLeft = exp.scrollWidth;
 }
 
+window.onload = function(){
+    setAngleMode("DEG");
+};
+
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('service-worker.js');
+}
 </script>
 
 </body>
