@@ -263,13 +263,6 @@ function convertUnits(){
         kmh:0.277778,
         mph:0.44704
 	};
-
-    //MONNAIE
-    const currency = {
-      USD:1,
-      HTG:131.50,
-      EUR:0.92
-    };
 	
     // LONGUEUR
     if(length[from] && length[to]){
@@ -301,13 +294,31 @@ function convertUnits(){
         result = value * speed[from] / speed[to];
     }
      
-	//MONNAIE
-	else if(currency[from] && currency[to]){
-    result =
-    value *
-    currency[from] /
-    currency[to];
-    }
+	// MONNAIE
+
+else if(from === "USD" && to === "HTG"){
+    result = value * 130;
+}
+
+else if(from === "HTG" && to === "USD"){
+    result = value / 130;
+}
+
+else if(from === "USD" && to === "EUR"){
+    result = value * 0.92;
+}
+
+else if(from === "EUR" && to === "USD"){
+    result = value / 0.92;
+}
+
+else if(from === "HTG" && to === "EUR"){
+    result = (value / 130) * 0.92;
+}
+
+else if(from === "EUR" && to === "HTG"){
+    result = (value / 0.92) * 130;
+}
 
     // TEMPÉRATURE
     else if(from === "c" && to === "f"){
@@ -434,7 +445,7 @@ function changeCategory(type){
                 ["mph","mph"]
             ];
             break;
-			
+		
 		case "currency":
     units = [
         ["USD","Dollar US"],
