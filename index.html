@@ -644,6 +644,22 @@ onclick="openUnitConverter()">📏 UNIT</button>
 
 </div>
 
+<!-- Modal AI (bezwen entènèt) -->
+<div id="aiModal">
+  <div class="ai-box">
+    <h2>🤖 Asistan AI</h2>
+    <div id="aiOfflineMsg" class="hidden" style="color:#df5d5d;text-align:center;margin-bottom:10px;font-weight:bold;">
+      ⚠️ Pa gen koneksyon entènèt. Fonksyon AI a mande entènèt pou l travay.
+    </div>
+    <textarea id="question" placeholder="Ekri kesyon matematik, fizik, chimi oswa ekonomi ou a..."></textarea>
+    <div id="aiResult"></div>
+    <div class="ai-buttons">
+      <button onclick="solveMath()">Voye</button>
+      <button onclick="closeAiModal()">Fèmen</button>
+    </div>
+  </div>
+</div>
+
 <script src="js/all.min.js"></script>
 <script>
 console.log(typeof nerdamer);
@@ -882,46 +898,74 @@ document.getElementById("result").innerText = "Erreur";
       }
  }
  
- document.getElementById("aiBtn").onclick = function() {
+// ⚠️ IMPORTANT SEKIRITE:
+// Pa janm mete yon vrè kle API (sekrè) dirèkteman isit la nan JS kliyan an.
+// Kle a rete sere sou sèvè Vercel la (Environment Variables).
+const AI_ENDPOINT = "https://vercel-bice-phi-58.vercel.app/api/ask";
 
-    alert("🤖Le mode programmation de l'Intelligence Artificielle (AI) foctionnera sous-peu. À travers lequel nous pouvons résoudre de manière automatique et rationnelle des exercices mathématiques, physiques, chimie et économie. \n\nMeçi pour votre patience.");
-
+document.getElementById("aiBtn").onclick = function() {
+    document.getElementById("aiModal").style.display = "flex";
+    checkAiConnection();
 };
 
+function closeAiModal(){
+    document.getElementById("aiModal").style.display = "none";
+}
+
+function checkAiConnection(){
+    const offlineMsg = document.getElementById("aiOfflineMsg");
+    const online = navigator.onLine && AI_ENDPOINT !== "";
+    offlineMsg.classList.toggle("hidden", online);
+    if(!AI_ENDPOINT){
+        offlineMsg.textContent = "⚠️ Fonksyon AI a poko konfigire (pa gen sèvè mete ankò).";
+        offlineMsg.classList.remove("hidden");
+    }
+    return online;
+}
+
+window.addEventListener("online", checkAiConnection);
+window.addEventListener("offline", checkAiConnection);
 
 async function solveMath(){
 
-    const question =
-        document.getElementById("question").value;
+    const question = document.getElementById("question").value.trim();
+    const resultBox = document.getElementById("aiResult");
 
-    const response = await fetch(
-        "URL_API_OU",
-        {
+    if(!question){
+        resultBox.innerHTML = "Ekri yon kesyon anvan.";
+        return;
+    }
+
+    if(!navigator.onLine){
+        resultBox.innerHTML = "⚠️ Pa gen koneksyon entènèt. Konekte epi eseye ankò.";
+        return;
+    }
+
+    if(!AI_ENDPOINT){
+        resultBox.innerHTML = "⚠️ Fonksyon AI a poko konfigire pou moman sa a.";
+        return;
+    }
+
+    resultBox.innerHTML = "⏳ Ap chèche repons lan...";
+
+    try{
+        const response = await fetch(AI_ENDPOINT, {
             method:"POST",
-            headers:{
-                "Content-Type":"application/json",
-                "Authorization":"Bearer API_KEY_OU"
-            },
-            body:JSON.stringify({
-                model:"gpt-4.1-mini",
-                messages:[
-                    {
-                        role:"system",
-                        content:"Ou se yon pwofesè matematik. Bay etap rezolisyon yo ak repons final la."
-                    },
-                    {
-                        role:"user",
-                        content:question
-                    }
-                ]
-            })
+            headers:{ "Content-Type":"application/json" },
+            body: JSON.stringify({ question })
+        });
+
+        if(!response.ok){
+            throw new Error("Sèvè a voye yon erè (" + response.status + ")");
         }
-    );
 
-    const data = await response.json();
+        const data = await response.json();
+        resultBox.innerHTML = data.answer || "Pa jwenn repons.";
 
-    document.getElementById("answer").innerHTML =
-        data.choices[0].message.content;
+    }catch(error){
+        resultBox.innerHTML = "❌ Erè koneksyon ak AI a. Verifye entènèt ou oswa reseye pita.";
+        console.error(error);
+    }
 }
 
 
@@ -996,8 +1040,6 @@ document.getElementById("expression");
 window.onload = function(){
     setAngleMode("DEG");
 };
-
-const AI_ENDPOINT = "https://vercel-bice-phi-58.vercel.app/api/ask";
 
 </script>
 
